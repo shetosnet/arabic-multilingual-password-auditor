@@ -1,16 +1,5 @@
 # Arabic & Multilingual Password Security Auditor API
 
-A zero-knowledge, edge-deployed REST API designed to audit password strength, detect regional Arabic and Franco-Arab keyboard patterns, check against known data breaches via `k-anonymity`, and generate cryptographically secure passwords.
-
-🔗 **Live API & 7-Day Free Trial:** [Get Your API Key on Zyla API Hub](https://zylalabs.com/api-marketplace/other/arabic+and+multilingual+password+auditor+api/15605)
-
----
-
-## Promo Videos
-
-**Arabic (0:52)**
-
-
 A stateless REST API that audits password strength with Arabic-aware detection: keyboard walks on **Arabic, QWERTY and AZERTY** layouts, common Arabic/Egyptian names and words, **Arabizi** digits (`7`=ح, `3`=ع, `5`=خ), Egyptian mobile numbers, dates, leetspeak, and an optional **k-anonymity breach check**.
 
 🔗 **API & 7-day free trial (50 requests):** [Zyla API Hub](https://zylalabs.com/api-marketplace/other/arabic+and+multilingual+password+auditor+api/15605)
