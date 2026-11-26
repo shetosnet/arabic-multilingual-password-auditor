@@ -6,6 +6,14 @@ A zero-knowledge, edge-deployed REST API designed to audit password strength, de
 
 ---
 
+## Promo Videos
+
+| Arabic (0:52) | English (0:48) |
+| :---: | :---: |
+| [Watch the Arabic promo](assets/Password-Security-Auditor-Promo-AR-v3-2b3edd3b.mp4) | [Watch the English promo](assets/Password-Security-Auditor-Promo-EN-v3-9f6b72fb.mp4) |
+
+---
+
 ## Why Traditional Password Checkers Fail in MENA & Multilingual Apps
 
 Standard open-source libraries (such as `zxcvbn`) are built primarily around English dictionaries and QWERTY layouts. As a result, they often rate weak Arabic passwords as "strong" simply because they use non-Latin UTF-8 characters.
