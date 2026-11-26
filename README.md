@@ -10,39 +10,60 @@ A zero-knowledge, edge-deployed REST API designed to audit password strength, de
 
 **Arabic (0:52)**
 
+
+A stateless REST API that audits password strength with Arabic-aware detection: keyboard walks on **Arabic, QWERTY and AZERTY** layouts, common Arabic/Egyptian names and words, **Arabizi** digits (`7`=ح, `3`=ع, `5`=خ), Egyptian mobile numbers, dates, leetspeak, and an optional **k-anonymity breach check**.
+
+🔗 **API & 7-day free trial (50 requests):** [Zyla API Hub](https://zylalabs.com/api-marketplace/other/arabic+and+multilingual+password+auditor+api/15605)
+
+
+---
+
+## Promo Videos
+
+**Arabic (0:52)**
+
 https://github.com/user-attachments/assets/94fb3d90-c095-4476-a19f-a7b3f8337e1e
 
 **English (0:48)**
 
 https://github.com/user-attachments/assets/2cba0a9b-f079-421a-b25e-b0c92f286bbe
 
-
 ---
 
-## Why Traditional Password Checkers Fail in MENA & Multilingual Apps
+## Why generic checkers miss Arabic patterns
 
-Standard open-source libraries (such as `zxcvbn`) are built primarily around English dictionaries and QWERTY layouts. As a result, they often rate weak Arabic passwords as "strong" simply because they use non-Latin UTF-8 characters.
+Generic estimators know English dictionaries and QWERTY. Tested with `zxcvbn` 4.4.2 (npm):
 
-This API solves that gap by analyzing:
-- **Arabic & Regional Keyboard Walks:** Detects adjacent key sequences on Arabic layouts (e.g., `ضصثقف`, `شسيبل`) alongside QWERTY/AZERTY patterns.
-- **Franco-Arab, Regional Patterns & Leetspeak:** Catches localized patterns, regional phone numbers, and common substitutions (e.g., `Ahmed@01012345678`, `P@ssw0rd123`).
-- **Privacy-First Breach Verification (`k-anonymity`):** Optionally checks passwords (`check_cloud: true`) against known leaked credential databases without ever transmitting or storing the full password.
-- **Stateless Zero-Knowledge Architecture:** Hosted on global edge workers with zero database persistence—passwords are processed in memory and discarded immediately.
+| Password | zxcvbn 4.4.2 (0-4) | This API |
+| :--- | :---: | :---: |
+| `ضصثقف123` | 2 | WEAK (0) |
+| `شسيبل` | 1 | WEAK (7) |
+| `ضصثقفغعهخ` | **3** | WEAK (7) |
+| `Ahmed@01012345678` | **3** | WEAK (37) |
+| `a7med.3ali` | **3** | WEAK (38) |
+| `azertyuiop` | 1 | WEAK (0) |
+| `k9#Xv!2mQ@7zLp$w` | 4 | STRONG (100) |
 
----
+`zxcvbn` gives a full Arabic keyboard row, a name + phone number, and an Arabizi name a **3 ("safely unguessable")**. This API marks all of them WEAK.
+
+## What it detects
+- **Keyboard walks** on Arabic, QWERTY and AZERTY layouts. A walk costs almost all the entropy of the characters it covers.
+- **Dictionary words + substitutions:** about 10,000 common passwords, 240+ Arabic/Egyptian names and words, leetspeak (`P@ssw0rd`) and Arabizi (`mo7amed`, `a7med`).
+- **Arabic typed on an English keyboard** (e.g. `lpl]` = محمد), and Arabic-Indic digits (`٠١٢٣`).
+- **Personal-data patterns:** Egyptian mobile numbers (010/011/012/015), dates (DDMMYYYY / YYYYMMDD), years.
+- **Optional breach check** (`check_cloud: true`) through Have I Been Pwned using k-anonymity (only the first 5 characters of the SHA-1 hash are sent).
 
 ## Endpoints
 
-| Method | Endpoint URL | Description |
+| Method | URL | Description |
 | :--- | :--- | :--- |
-| `POST` | `https://zylalabs.com/api/15605/arabic+and+multilingual+password+auditor+api/42105/analyze+password+strength+and+vulnerabilities` | Audits a password for entropy, keyboard walks, dictionary/leetspeak matches, and optional breach exposure. |
-| `GET` | `https://zylalabs.com/api/15605/arabic+and+multilingual+password+auditor+api/42106/generate+cryptographically+strong+password` | Generates a verified high-entropy password (`length` query parameter: `12` to `64`, default `16`). |
+| `POST` | `https://zylalabs.com/api/15605/arabic+and+multilingual+password+auditor+api/42105/analyze+password+strength+and+vulnerabilities` | Analyze a password. Body: `{"password": "...", "check_cloud": false}` |
+| `GET` | `https://zylalabs.com/api/15605/arabic+and+multilingual+password+auditor+api/42106/generate+cryptographically+strong+password` | Generate a verified strong password (`length` 12-64, default 16). |
 
----
+Passwords longer than 256 characters are truncated (`"truncated": true`). Every finding has the shape `{"code": "...", "params": {...}}`, and `params` is **always an object** (`{}` when empty).
 
-## Quick Start Code Examples
+## Quick start
 
-### 1. cURL (`POST` Analyze Password)
 ```bash
 curl --location --request POST 'https://zylalabs.com/api/15605/arabic+and+multilingual+password+auditor+api/42105/analyze+password+strength+and+vulnerabilities' \
   --header 'Authorization: Bearer YOUR_ZYLA_API_KEY' \
@@ -50,54 +71,71 @@ curl --location --request POST 'https://zylalabs.com/api/15605/arabic+and+multil
   --data-raw '{"password": "Ahmed@01012345678", "check_cloud": false}'
 ```
 
-### 2. Python (`requests`)
 ```python
 import requests
-
-url = "https://zylalabs.com/api/15605/arabic+and+multilingual+password+auditor+api/42105/analyze+password+strength+and+vulnerabilities"
-headers = {
-    "Authorization": "Bearer YOUR_ZYLA_API_KEY",
-    "Content-Type": "application/json"
-}
-payload = {
-    "password": "ضصثقف123",
-    "check_cloud": True
-}
-
-response = requests.post(url, json=payload, headers=headers)
-print(response.json())
+r = requests.post("https://zylalabs.com/api/15605/arabic+and+multilingual+password+auditor+api/42105/analyze+password+strength+and+vulnerabilities",
+    headers={"Authorization": "Bearer YOUR_ZYLA_API_KEY"},
+    json={"password": "ضصثقفغعهخ", "check_cloud": False}, timeout=10)
+print(r.json()["status"])   # WEAK
 ```
 
-### 3. JavaScript / Node.js (`fetch`)
-```javascript
-const response = await fetch(
-  "https://zylalabs.com/api/15605/arabic+and+multilingual+password+auditor+api/42105/analyze+password+strength+and+vulnerabilities",
-  {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer YOUR_ZYLA_API_KEY",
-      "Content-Type": "application/json"
+> **Call the API from your backend, never from the browser**, so your API key stays secret.
+
+### Example response
+```json
+{
+    "length": 17,
+    "truncated": false,
+    "is_passphrase": false,
+    "scripts": [
+        "Lowercase",
+        "Uppercase",
+        "Digits",
+        "Symbols"
+    ],
+    "raw_entropy": 111.43,
+    "true_entropy": 31.88,
+    "score": 37,
+    "status": "WEAK",
+    "resilience": "Instant (< 1 second)",
+    "cloud_audit": "Skipped (Offline Mode)",
+    "findings": [
+        {
+            "code": "name_found",
+            "params": {
+                "word": "ahmed"
+            }
+        },
+        {
+            "code": "phone",
+            "params": {}
+        }
+    ],
+    "vulnerabilities": [
+        "Contains a common name or local word: 'ahmed'",
+        "Looks like a phone number"
+    ],
+    "compliance": {
+        "Standard_Policy": {
+            "passed": false,
+            "reasons": [
+                "True Entropy < 50.0 bits"
+            ]
+        },
+        "Enterprise_Strict": {
+            "passed": false,
+            "reasons": [
+                "True Entropy < 65.0 bits"
+            ]
+        }
     },
-    body: JSON.stringify({
-      password: "ضصثقف123",
-      check_cloud: false
-    })
-  }
-);
-
-const data = await response.json();
-console.log(data);
+    "recommended_alternative": "L!3+5s_sK@+QNDpH"
+}
 ```
 
-### 4. Generate a Cryptographically Strong Password (`GET`)
-```bash
-curl --location --request GET 'https://zylalabs.com/api/15605/arabic+and+multilingual+password+auditor+api/42106/generate+cryptographically+strong+password?length=20' \
-  --header 'Authorization: Bearer YOUR_ZYLA_API_KEY'
-```
-
----
-
-## Privacy & Free Trial
-- **Zero Logging:** Input passwords are never written to disk, logs, or analytics.
-- **AI Agent Ready:** Compatible with Zyla MCP Server (`mcp.zylalabs.com`) for automated agent workflows.
-- **Start Free:** Includes a 7-day free trial (50 requests) on [Zyla API Hub](https://zylalabs.com/api-marketplace/other/arabic+and+multilingual+password+auditor+api/15605).
+## Privacy and limits
+- This service does **not store or log** the passwords it receives, and keeps them in memory only while analyzing.
+- Requests pass through **Zyla API Hub's gateway**; see their [privacy policy](https://zylalabs.com/terms#privacy). Avoid sending real production passwords you cannot afford to expose; for sign-up forms, prefer analyzing in your own backend over HTTPS.
+- Scoring is an **estimate** (entropy + patterns), not a cracking tool. A password built from words that are not in the dictionaries can score higher than it deserves, and passphrases of uncommon words are scored by characters, not words.
+- The policies `Standard_Policy` and `Enterprise_Strict` are this API's own baselines, **not** NIST SP 800-63B.
+- Common-password list: [SecLists](https://github.com/danielmiessler/SecLists) (MIT).
