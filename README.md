@@ -8,9 +8,14 @@ A zero-knowledge, edge-deployed REST API designed to audit password strength, de
 
 ## Promo Videos
 
-| Arabic (0:52) | English (0:48) |
-| :---: | :---: |
-| [Watch the Arabic promo](assets/Password-Security-Auditor-Promo-AR-v3-2b3edd3b.mp4) | [Watch the English promo](assets/Password-Security-Auditor-Promo-EN-v3-9f6b72fb.mp4) |
+**Arabic (0:52)**
+
+https://github.com/user-attachments/assets/94fb3d90-c095-4476-a19f-a7b3f8337e1e
+
+**English (0:48)**
+
+https://github.com/user-attachments/assets/2cba0a9b-f079-421a-b25e-b0c92f286bbe
+
 
 ---
 
