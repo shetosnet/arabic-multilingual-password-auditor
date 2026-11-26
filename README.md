@@ -128,3 +128,15 @@ print(r.json()["status"])   # WEAK
 - Scoring is an **estimate** (entropy + patterns), not a cracking tool. A password built from words that are not in the dictionaries can score higher than it deserves, and passphrases of uncommon words are scored by characters, not words.
 - The policies `Standard_Policy` and `Enterprise_Strict` are this API's own baselines, **not** NIST SP 800-63B.
 - Common-password list: [SecLists](https://github.com/danielmiessler/SecLists) (MIT).
+
+## Examples
+
+Ready-to-run code in [`examples/`](examples/): **cURL, Python (single + batch audit), Node.js (including a sign-up validation helper), PHP**. See [`examples/README.md`](examples/README.md).
+
+```bash
+export ZYLA_API_KEY=your_key
+python examples/python/analyze.py 'Ahmed@01012345678'
+```
+
+## License
+MIT (examples). See [LICENSE](LICENSE).
